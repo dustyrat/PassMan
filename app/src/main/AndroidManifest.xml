@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mycompany.passman" >
+
+    <uses-sdk
+        android:maxSdkVersion="22"
+        android:minSdkVersion="14"
+        android:targetSdkVersion="21" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Generate"
+            android:label="@string/title_activity_generate" >
+            <intent-filter>
+                <action android:name="com.mycompany.passman.Generate" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Accounts"
+            android:exported="false"
+            android:label="@string/title_activity_accounts" >
+            <intent-filter>
+                <action android:name="com.mycompany.passman.Accounts" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddAccount"
+            android:exported="false"
+            android:label="@string/title_activity_add_account" >
+            <intent-filter>
+                <action android:name="com.mycompany.passman.AddAccount" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Edit"
+            android:label="@string/title_activity_edit" >
+            <intent-filter>
+                <action android:name="com.mycompany.passman.Edit" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Details"
+            android:label="@string/title_activity_details" >
+            <intent-filter>
+                <action android:name="com.mycompany.passman.Details" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
