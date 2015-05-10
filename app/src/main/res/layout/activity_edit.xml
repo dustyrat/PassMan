@@ -6,6 +6,181 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="com.mycompany.passman.Edit">
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/delete"
+        android:src="@drawable/ic_action_discard"
+        android:background="#ffff0008"
+        android:scaleType="fitCenter"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/editUser"
+        android:layout_alignEnd="@+id/editUser" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Web Address"
+        android:id="@+id/textView8"
+        android:layout_below="@+id/delete"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/webAddress"
+        android:layout_below="@+id/textView8"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/editAddress"
+        android:layout_toStartOf="@+id/editAddress"
+        android:enabled="false"
+        android:text="www.google.com"
+        android:hint="www.google.com" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="User Name"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/webAddress"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/editAddress"
+        android:layout_alignEnd="@+id/editAddress" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/userName"
+        android:layout_below="@+id/textView9"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/textView9"
+        android:layout_alignEnd="@+id/textView9"
+        android:hint="User1234"
+        android:text="User1234"
+        android:enabled="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Password"
+        android:id="@+id/textView10"
+        android:layout_below="@+id/userName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/userName"
+        android:layout_alignEnd="@+id/userName" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/Password"
+        android:layout_below="@+id/textView10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/editUser"
+        android:layout_toStartOf="@+id/editUser"
+        android:hint="Pass1234"
+        android:text="Pass1234"
+        android:enabled="false"
+        android:password="true"
+        android:inputType="textPassword" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editAddress"
+        android:src="@drawable/ic_action_edit"
+        android:layout_alignRight="@+id/textView8"
+        android:layout_alignEnd="@+id/textView8"
+        android:layout_alignBottom="@+id/webAddress"
+        android:layout_alignTop="@+id/webAddress"
+        android:scaleType="fitCenter"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editUser"
+        android:src="@drawable/ic_action_edit"
+        android:scaleType="fitCenter"
+        android:layout_above="@+id/textView10"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/userName"
+        android:layout_toRightOf="@+id/webAddress"
+        android:layout_toEndOf="@+id/webAddress" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editPassword"
+        android:src="@drawable/ic_action_edit"
+        android:scaleType="fitCenter"
+        android:layout_alignBottom="@+id/Password"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/textView10"
+        android:layout_toRightOf="@+id/Password"
+        android:layout_toEndOf="@+id/Password" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate Password"
+        android:id="@+id/generate"
+        android:layout_below="@+id/Password"
+        android:enabled="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/editPassword"
+        android:layout_alignEnd="@+id/editPassword" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/submit"
+        android:src="@drawable/ic_action_accept"
+        android:background="#ff08bc00"
+        android:scaleType="fitCenter"
+        android:cropToPadding="false"
+        android:layout_above="@+id/cancel"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/cancel"
+        android:layout_alignEnd="@+id/cancel" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cancel"
+        android:src="@drawable/ic_action_cancel"
+        android:background="#ffb9b9b9"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/editPassword"
+        android:layout_alignEnd="@+id/editPassword" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Notifications"
+        android:id="@+id/enableNot"
+        android:layout_below="@+id/generate"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/generate"
+        android:layout_alignEnd="@+id/generate" />
 
 </RelativeLayout>

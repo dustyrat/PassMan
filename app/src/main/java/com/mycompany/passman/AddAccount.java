@@ -7,18 +7,20 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+
 import java.util.Map;
 
 public class AddAccount extends Activity implements View.OnClickListener {
 
+    //TODO set notifications
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_account);
-        Button submit = (Button) findViewById(R.id.submit);
-        Button cancel = (Button) findViewById(R.id.cancel);
+        ImageButton submit = (ImageButton) findViewById(R.id.submit);
+        ImageButton cancel = (ImageButton) findViewById(R.id.cancel);
         submit.setOnClickListener(this);
         cancel.setOnClickListener(this);
     }
@@ -59,8 +61,8 @@ public class AddAccount extends Activity implements View.OnClickListener {
         Account newAccount = new Account(address.getText().toString(), user_name.getText().toString(), pwd.getText().toString());
         key = newAccount.getAddress() + " " + newAccount.getUser_name();
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("Accounts", MODE_PRIVATE);
-        Map<String, ?> keys = pref.getAll();
+        SharedPreferences data = getApplicationContext().getSharedPreferences("Accounts", MODE_PRIVATE);
+        Map<String, ?> keys = data.getAll();
         for(Map.Entry<String,?> entry : keys.entrySet()) {
             if (key.equals(entry.getKey())){
                 new AlertDialog.Builder(this)
@@ -75,18 +77,22 @@ public class AddAccount extends Activity implements View.OnClickListener {
                 return;
             }
         }
-
-        value = newAccount.get_date() + " " + newAccount.getCurPwd() + " " + newAccount.getPwdsString();
+        if (!newAccount.getPwds().isEmpty()) {
+            value = newAccount.get_date() + " " + newAccount.getCurPwd() + " " + newAccount.getPwdsString();
+        }
+        else {
+            value = newAccount.get_date() + " " + newAccount.getCurPwd();
+        }
         save(key, value);
-        setResult(RESULT_OK, null);
+        setResult(1, null);
         finish();
     }
 
+    //TODO encrypt data
     private void save(String key, String value) {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("Accounts", MODE_PRIVATE);
-        Editor editor = pref.edit();
-        editor.putString(key, value);
-        editor.apply();
+        SharedPreferences data = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
+        Editor editor = data.edit();
+        editor.putString(key, value).apply();
     }
 
     @Override
@@ -94,8 +100,7 @@ public class AddAccount extends Activity implements View.OnClickListener {
         switch(v.getId()){
             case R.id.submit: submitClick();
                 break;
-            case R.id.cancel: setResult(RESULT_OK, null);
-                finish();
+            case R.id.cancel: finish();
                 break;
         }
     }

@@ -31,8 +31,18 @@ public class Account {
     public Account(String address, String user_name, String pwd){
         this.setAddress(address);
         this.setUser_name(user_name);
+        this.setCurPwd(pwd);
+        this.last_update = new Date();
         this.pwds = new ArrayList<>();
-        add_pwd(pwd);
+    }
+
+    public void fromString(String data){
+        String[] temp = data.split(" ");
+        setDate(temp[0]);
+        setAddress(temp[1]);
+        setUser_name(temp[2]);
+        setCurPwd(temp[3]);
+        setPwds(new ArrayList<>(Arrays.asList(temp).subList(4, temp.length)));
     }
 
     public void setDate(String date){
@@ -65,7 +75,7 @@ public class Account {
         this.curPwd = pwd;
         this.last_update = new Date();
 
-        while (this.pwds.size() >= 10){
+        while (this.pwds.size() > 10){
             this.pwds.remove(0);
         }
     }
@@ -77,7 +87,7 @@ public class Account {
     }
 
     public String get_Date(){
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
         String date = format.format(this.last_update);
         return date;
     }

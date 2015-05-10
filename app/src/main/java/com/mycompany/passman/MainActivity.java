@@ -3,6 +3,7 @@ package com.mycompany.passman;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,17 +31,20 @@ public class MainActivity extends Activity implements View.OnClickListener {
         startActivity(new Intent("com.mycompany.passman.Accounts"));
     }
 
+    private void settingsClick(){
+        startActivity(new Intent("com.mycompany.passman.Settings"));
+    }
+
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.gen_page: gen_pageClick();
                 break;
             case R.id.log_page: log_pageClick();
                 break;
-            case R.id.settings: //TODO
+            case R.id.settings: settingsClick();
                 break;
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

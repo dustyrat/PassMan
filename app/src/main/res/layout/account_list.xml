@@ -36,12 +36,13 @@
         android:password="true"
         android:text="Password"
         android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentEnd="true"
         android:layout_below="@+id/User_Name"
         android:layout_alignParentLeft="true"
         android:inputType="textWebPassword"
-        android:textIsSelectable="true" />
+        android:textIsSelectable="true"
+        android:maxLines="3"
+        android:layout_toLeftOf="@+id/Show_Password"
+        android:layout_toStartOf="@+id/Show_Password" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -78,7 +79,7 @@
         android:layout_height="wrap_content"
         android:text="Show Password"
         android:id="@+id/Show_Password"
-        android:layout_below="@+id/Details"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/User_Name"
+        android:layout_alignLeft="@+id/Edit"
+        android:layout_alignStart="@+id/Edit" />
 </RelativeLayout>

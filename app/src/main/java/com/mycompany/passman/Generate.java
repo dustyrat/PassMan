@@ -3,6 +3,7 @@ package com.mycompany.passman;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,36 +13,49 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class Generate extends Activity implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
 
     private CheckBox alpha, numeric, special;
+    private NumberPicker upper, lower, num, spec;
     private RadioGroup radioSpec;
     private RadioButton spec_all, spec_custom;
     private EditText custom;
     private TextView maxView;
     private TextView minView;
-    int Max = 32, Min = 1;
+    private int Max = 32, Min = 1;
+    private String data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate);
+        Intent intent = getIntent();
+        data = intent.getStringExtra("data");
+
         Button gen_pwd = (Button) findViewById(R.id.gen_pwd);
-        Button back = (Button) findViewById(R.id.back);
+        ImageButton back = (ImageButton) findViewById(R.id.cancel);
 
         radioSpec = (RadioGroup)findViewById(R.id.radioSpec);
-
         spec_all = (RadioButton)findViewById(R.id.spec_all);
         spec_custom = (RadioButton)findViewById(R.id.spec_custom);
 
         alpha = (CheckBox)findViewById(R.id.alpha);
         numeric = (CheckBox)findViewById(R.id.numeric);
         special = (CheckBox)findViewById(R.id.special);
+
+        upper = (NumberPicker)findViewById(R.id.upper);
+        lower = (NumberPicker)findViewById(R.id.lower);
+        num = (NumberPicker)findViewById(R.id.num);
+        spec = (NumberPicker)findViewById(R.id.spec);
 
         custom = (EditText)findViewById(R.id.custom);
 
@@ -53,6 +67,19 @@ public class Generate extends Activity implements View.OnClickListener,
         alpha.setOnCheckedChangeListener(this);
         numeric.setOnCheckedChangeListener(this);
         special.setOnCheckedChangeListener(this);
+
+        upper.setMaxValue(5);
+        upper.setMinValue(0);
+        upper.setEnabled(false);
+        lower.setMaxValue(5);
+        lower.setMinValue(0);
+        lower.setEnabled(false);
+        num.setMaxValue(5);
+        num.setMinValue(0);
+        num.setEnabled(false);
+        spec.setMaxValue(5);
+        spec.setMinValue(0);
+        spec.setEnabled(false);
 
         RangeSeekBar<Integer> seekBar = new RangeSeekBar<>(1, 32, this);
         seekBar.setNotifyWhileDragging(true);
@@ -75,23 +102,56 @@ public class Generate extends Activity implements View.OnClickListener,
     }
 
     private void gen_pwdClick(){
-        StringBuilder buffer = new StringBuilder();
-        String characters = "";
-        int length;
+        if ((lower.getValue() + upper.getValue() + num.getValue() + spec.getValue()) > Max){
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Minimums can not exceed max length")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            return;
+        }
+
+        StringBuilder buffer = new StringBuilder(), temp = new StringBuilder();
+        String characters = "", low = "", up = "", number = "", other = "";
+        int length, a = lower.getValue(), A = upper.getValue() , n = num.getValue(), s = spec.getValue();
 
         if (alpha.isChecked()){
-            characters += "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            low = "abcdefghijklmnopqrstuvwxyz";
+            up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for (int i = 0; i < a; i++) {
+                int index = (int)(Math.random() * low.length());
+                temp.append(low.charAt(index));
+            }
+            for (int i = 0; i < A; i++) {
+                int index = (int)(Math.random() * up.length());
+                temp.append(up.charAt(index));
+            }
+            characters += low + up;
         }
         if (numeric.isChecked()){
-            characters += "1234567890";
+            number = "1234567890";
+            for (int i = 0; i < n; i++) {
+                double index = Math.random() * number.length();
+                temp.append(number.charAt((int) index));
+            }
+            characters += number;
         }
         if (special.isChecked()){
             if (spec_all.isChecked()){
-                characters += "~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?";
+                other = "~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?";
             }
             else if (spec_custom.isChecked()){
-                characters += custom.getText().toString();
+                other = custom.getText().toString();
             }
+            for (int i = 0; i < s; i++) {
+                int index = (int)(Math.random() * other.length());
+                temp.append(other.charAt(index));
+            }
+            characters += other;
         }
 
         if (characters.equals("") || characters.contains(" ")){
@@ -107,11 +167,30 @@ public class Generate extends Activity implements View.OnClickListener,
             return;
         }
 
-        int charactersLength = characters.length();
         length = Min + (int)(Math.random() * ((Max - Min) + 1));
         for (int i = 0; i < length; i++) {
-            double index = Math.random() * charactersLength;
-            buffer.append(characters.charAt((int) index));
+            int index = (int)(Math.random() * characters.length());
+            buffer.append(characters.charAt(index));
+        }
+
+        if (temp.length() > 0) {
+            int index;
+            ArrayList<Integer> indexs = new ArrayList<>();
+            for (int i = 0; i < temp.length(); i++) {
+                do {
+                    index = (int) (Math.random() * buffer.length());
+                }while (indexs.contains(index));
+                indexs.add(index);
+                buffer.setCharAt(index, temp.charAt(i));
+            }
+        }
+        
+        if (!(data == null)){
+            while(data.contains(buffer.toString())) {
+                gen_pwdClick();
+            }
+            setResult(2, new Intent().putExtra("data", buffer.toString()));
+            finish();
         }
         TextView pwd = (TextView) findViewById(R.id.pwd);
         pwd.setText(buffer.toString());
@@ -123,21 +202,32 @@ public class Generate extends Activity implements View.OnClickListener,
             case R.id.gen_pwd:
                 gen_pwdClick();
                 break;
-            case R.id.back: finish();
-                break;
-            case R.id.copy:
-                //TODO
+            case R.id.cancel: finish();
                 break;
         }
     }
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
         switch (buttonView.getId()){
-            case R.id.special:
+            case R.id.alpha: upper.setEnabled(isChecked);
+                lower.setEnabled(isChecked);
+                if (!lower.isEnabled()){
+                    lower.setValue(0);
+                }
+                break;
+            case R.id.numeric: num.setEnabled(isChecked);
+                if (!num.isEnabled()){
+                    num.setValue(0);
+                }
+                break;
+            case R.id.special: spec.setEnabled(isChecked);
                 for (int i = 0; i < radioSpec.getChildCount(); i++){
                     radioSpec.getChildAt(i).setEnabled(isChecked);
                 }
                 custom.setEnabled(isChecked);
+                if (!spec.isEnabled()){
+                    spec.setValue(0);
+                }
                 break;
         }
     }

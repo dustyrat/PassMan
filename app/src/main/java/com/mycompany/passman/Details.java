@@ -2,7 +2,6 @@ package com.mycompany.passman;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,30 +16,33 @@ import java.util.ArrayList;
 
 public class Details extends Activity implements View.OnClickListener {
 
+    //TODO decrypt data
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
         Intent intent = getIntent();
-        Account data = new Account(intent.getStringExtra("pwds"));
+        Account data = new Account(intent.getStringExtra("data"));
 
         TextView web_address, user_name, cur_pass, date;
 
         ListView passList = (ListView)findViewById(R.id.passView);
-        Button back = (Button)findViewById(R.id.back);
+        Button back = (Button)findViewById(R.id.cancel);
         web_address = (TextView)findViewById(R.id.web_address);
         user_name = (TextView)findViewById(R.id.username);
         cur_pass = (TextView)findViewById(R.id.cur_pass);
         date = (TextView)findViewById(R.id.date);
 
-        if(!data.getPwds().isEmpty()) {
+        if(data.getPwds().isEmpty()) {
             ArrayList<String> notFound = new ArrayList<>();
             notFound.add("No Entries Found");
             data.setPwds(notFound);
         }
+
         ArrayAdapter<String> itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, data.getPwds());
         passList.setAdapter(itemsAdapter);
+
         web_address.setText(data.getAddress());
         user_name.setText(data.getUser_name());
         cur_pass.setText(data.getCurPwd());

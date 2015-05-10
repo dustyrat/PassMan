@@ -32,20 +32,25 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
         data = objects;
     }
     
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(final int position, View convertView, ViewGroup parent){
         final ViewHolder viewHolder;
         if(convertView == null) {
             LayoutInflater inflater = myContext.getLayoutInflater();
             convertView = inflater.inflate(R.layout.account_list, null);
             viewHolder = new ViewHolder();
+
             viewHolder.WebAddress = (TextView)convertView.findViewById(R.id.Web_Address);
             viewHolder.UserName = (TextView)convertView.findViewById(R.id.User_Name);
             viewHolder.Password = (TextView)convertView.findViewById(R.id.Password);
             viewHolder.LastDate = (TextView)convertView.findViewById(R.id.Date);
+
             viewHolder.Edit = (Button)convertView.findViewById(R.id.Edit);
             viewHolder.Details = (Button)convertView.findViewById(R.id.Details);
+
             viewHolder.Show = (CheckBox)convertView.findViewById(R.id.Show_Password);
+
             viewHolder.Details.setTag(position);
+            viewHolder.Edit.setTag(position);
             convertView.setTag(viewHolder);
         }
         else{
@@ -60,19 +65,20 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
         viewHolder.Edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                int cur_pos = (Integer) v.getTag();
+                myContext.startActivityForResult(new Intent("com.mycompany.passman.Edit").putExtra("data", data.get(cur_pos).toString()).putExtra("pos", cur_pos), 2);
             }
         });
 
         viewHolder.Details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int cur_pos = (Integer)v.getTag();
-                v.getContext().startActivity(new Intent("com.mycompany.passman.Details").putExtra("pwds", data.get(cur_pos).toString()));
+                int cur_pos = (Integer) v.getTag();
+                v.getContext().startActivity(new Intent("com.mycompany.passman.Details").putExtra("data", data.get(cur_pos).toString()));
             }
         });
 
-        viewHolder.Show.setOnClickListener(new View.OnClickListener(){
+        viewHolder.Show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
