@@ -3,6 +3,7 @@ package com.mycompany.passman;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -10,14 +11,26 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Map;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 public class AddAccount extends Activity implements View.OnClickListener {
+    private String password;
 
     //TODO set notifications
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        password = this.getIntent().getStringExtra("password");
         setContentView(R.layout.activity_add_account);
         ImageButton submit = (ImageButton) findViewById(R.id.submit);
         ImageButton cancel = (ImageButton) findViewById(R.id.cancel);
@@ -25,7 +38,7 @@ public class AddAccount extends Activity implements View.OnClickListener {
         cancel.setOnClickListener(this);
     }
 
-    private void submitClick(){
+    private void submitClick() {
         EditText address = (EditText) findViewById(R.id.address);
         EditText user_name = (EditText) findViewById(R.id.username);
         EditText pwd = (EditText) findViewById(R.id.pwd);
@@ -83,12 +96,12 @@ public class AddAccount extends Activity implements View.OnClickListener {
         else {
             value = newAccount.get_date() + " " + newAccount.getCurPwd();
         }
-        save(key, value);
-        setResult(1, null);
+
+        save(key, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
+        setResult(1, new Intent().putExtra("password", password));
         finish();
     }
 
-    //TODO encrypt data
     private void save(String key, String value) {
         SharedPreferences data = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
         Editor editor = data.edit();
@@ -100,7 +113,8 @@ public class AddAccount extends Activity implements View.OnClickListener {
         switch(v.getId()){
             case R.id.submit: submitClick();
                 break;
-            case R.id.cancel: finish();
+            case R.id.cancel: setResult(1, new Intent().putExtra("password", password));
+                finish();
                 break;
         }
     }

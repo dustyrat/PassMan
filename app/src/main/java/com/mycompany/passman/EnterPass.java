@@ -5,14 +5,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.content.SharedPreferences.Editor;
 
 
 public class EnterPass extends Activity implements View.OnClickListener {
@@ -67,7 +65,7 @@ public class EnterPass extends Activity implements View.OnClickListener {
 
     private void submitClick() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        if (password.getText().hashCode() == settings.getInt("password", 0)){ //TODO need better hash
+        if (password.getText().hashCode() == settings.getInt("password", 0)){ //TODO hashing
             new AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("You have entered the wrong password")
@@ -79,7 +77,8 @@ public class EnterPass extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
-        setResult(4, new Intent().putExtra("password", password.getText()));
+        EnDecrypt.password = password.getText().toString();
+        setResult(4, new Intent());
         finish();
     }
 }

@@ -13,9 +13,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.util.Map;
+
 
 public class SetPass extends Activity implements View.OnClickListener {
-    private ImageButton submit, cancel;
     private EditText curPwd, newPwd, conPwd;
     private Boolean passSet;
     private int password;
@@ -26,8 +27,7 @@ public class SetPass extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_set_pass);
         loadSavedPreferences();
 
-        submit = (ImageButton)findViewById(R.id.submit);
-        cancel = (ImageButton)findViewById(R.id.cancel);
+        ImageButton submit = (ImageButton) findViewById(R.id.submit), cancel = (ImageButton) findViewById(R.id.cancel);
         submit.setOnClickListener(this);
         cancel.setOnClickListener(this);
 
@@ -42,7 +42,7 @@ public class SetPass extends Activity implements View.OnClickListener {
     private void loadSavedPreferences() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         passSet = settings.getBoolean("passSet", false);
-        if (!passSet) {
+        if (passSet) {
             password = settings.getInt("password", 0);
         }
     }
@@ -81,18 +81,18 @@ public class SetPass extends Activity implements View.OnClickListener {
     }
 
     private void submitClick() {
-        if (passSet && curPwd.hashCode() != password){
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("You have entered the wrong current password")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-            return;
-        }
+            if (passSet && curPwd.getText().toString().hashCode() != password){ //TODO hashing
+                new AlertDialog.Builder(this)
+                        .setTitle("Error")
+                        .setMessage("You have entered the wrong current password")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                return;
+            }
         if (passSet && curPwd.getText().toString().equals(newPwd.getText().toString())) {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -118,10 +118,21 @@ public class SetPass extends Activity implements View.OnClickListener {
             return;
         }
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        Editor editor = settings.edit();
-        editor.putInt("password", newPwd.getText().hashCode()); //TODO need better hash
+        Editor editor;
+        if(passSet) {
+            SharedPreferences data = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
+            editor = data.edit();
+            Map<String, ?> keys = data.getAll();
+            for (Map.Entry<String, ?> entry : keys.entrySet()) {
+                editor.putString(entry.getKey(), EnDecrypt.encrypt(newPwd.getText().toString().getBytes(), EnDecrypt.decrypt(curPwd.getText().toString().getBytes(), entry.getValue().toString())));
+            }
+            editor.apply();
+        }
+        editor = settings.edit();
+        EnDecrypt.password = newPwd.getText().toString();
+        editor.putInt("password", newPwd.getText().toString().hashCode()); //TODO hashing
         editor.putBoolean("passSet", true).apply();
-        setResult(4, new Intent().putExtra("password", newPwd.getText())); //TODO decrypt/encrypt current user data
+        setResult(4, new Intent());
         finish();
     }
 }

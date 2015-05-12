@@ -1,6 +1,8 @@
 package com.mycompany.passman;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -85,10 +87,23 @@ public class Settings extends Activity implements View.OnClickListener, Compound
     }
 
     private void clearClick() {
-        //TODO confermation
-        getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE).edit().clear().commit();
-        getApplicationContext().getSharedPreferences("data", MODE_PRIVATE).edit().clear().commit();
-        loadSavedPreferences();
+        new AlertDialog.Builder(this)
+                .setTitle("Confirmation")
+                .setMessage("This will delete all saved data including resetting the password.\nAre you sure you want to delete?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE).edit().clear().commit();
+                        getApplicationContext().getSharedPreferences("data", MODE_PRIVATE).edit().clear().commit();
+                        loadSavedPreferences();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
     }
 
     @Override

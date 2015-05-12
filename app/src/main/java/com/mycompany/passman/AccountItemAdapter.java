@@ -32,7 +32,7 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
         data = objects;
     }
     
-    public View getView(final int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, ViewGroup parent){
         final ViewHolder viewHolder;
         if(convertView == null) {
             LayoutInflater inflater = myContext.getLayoutInflater();

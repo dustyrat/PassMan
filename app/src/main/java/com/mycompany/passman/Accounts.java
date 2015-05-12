@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -16,7 +17,6 @@ public class Accounts extends Activity implements View.OnClickListener {
     private ArrayList<Account> listData;
     private AccountItemAdapter itemAdapter;
     private ImageButton add_account;
-    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,8 @@ public class Accounts extends Activity implements View.OnClickListener {
             temp = entry.getKey().split("\\s+");
             addressString = temp[0];
             usernameString = temp[1];
-            temp = entry.getValue().toString().split("\\s+");
+            temp = EnDecrypt.decrypt(EnDecrypt.password.getBytes(), entry.getValue().toString()).split("\\s+");
+
             dateString = temp[0];
             curPwd = temp[1];
             pwds = new ArrayList<>();
@@ -59,7 +60,7 @@ public class Accounts extends Activity implements View.OnClickListener {
 
 
     private void add_accountClick() {
-        startActivityForResult(new Intent("com.mycompany.passman.AddAccount").putExtra("password", password), 1);
+        startActivityForResult(new Intent("com.mycompany.passman.AddAccount"), 1);
     }
 
     @Override
@@ -86,14 +87,13 @@ public class Accounts extends Activity implements View.OnClickListener {
             case 1: startActivity(new Intent("com.mycompany.passman.Accounts").putExtra("refresh", true));
                 finish();
                 break;
-            case 2: listData.get(data.getIntExtra("pos", Integer.parseInt(null))).fromString(data.getStringExtra("data"));
+            case 2: listData.get(data.getIntExtra("pos", 0)).fromString(data.getStringExtra("data"));
                 itemAdapter.notifyDataSetChanged();
                 break;
-            case 3: listData.remove(data.getIntExtra("pos", Integer.parseInt(null)));
+            case 3: listData.remove(data.getIntExtra("pos", 0));
                 itemAdapter.notifyDataSetChanged();
                 break;
-            case 4: password = data.getStringExtra("password");
-                runActivity();
+            case 4: runActivity();
                 break;
             case 5: finish();
                 break;

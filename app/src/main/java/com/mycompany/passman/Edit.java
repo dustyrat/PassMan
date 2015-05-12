@@ -13,7 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 
 public class Edit extends Activity implements View.OnClickListener {
@@ -30,7 +40,7 @@ public class Edit extends Activity implements View.OnClickListener {
 
         intent = getIntent();
         data = new Account(intent.getStringExtra("data"));
-        pos = intent.getIntExtra("pos", -1);
+        pos = intent.getIntExtra("pos", 0);
 
         address = (EditText)findViewById(R.id.webAddress);
         user = (EditText)findViewById(R.id.userName);
@@ -95,7 +105,8 @@ public class Edit extends Activity implements View.OnClickListener {
                 break;
             case R.id.submit: SubmitClick();
                 break;
-            case R.id.cancel: finish();
+            case R.id.cancel: setResult(1, new Intent());
+                finish();
                 break;
             case R.id.delete: DeleteClick();
                 break;
@@ -182,7 +193,7 @@ public class Edit extends Activity implements View.OnClickListener {
         if(newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString())){
             data.add_pwd(pass.getText().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
-            save(newkey, value);
+            save(newkey, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
         }
         else if(newkey.equals(oldkey) && (data.getCurPwd().equals(pass.getText().toString()) || data.getPwdsString().equals(pass.getText().toString()))){
             new AlertDialog.Builder(this)
@@ -203,14 +214,14 @@ public class Edit extends Activity implements View.OnClickListener {
             data.setCurPwd(pass.getText().toString());
             data.setDate(new Date().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
-            save(newkey,value);
+
+            save(newkey, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
         }
 
         setResult(2, new Intent().putExtra("data", data.toString()).putExtra("pos", pos));
         finish();
     }
 
-    //TODO encrypt data
     private void save(String key, String value) {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
