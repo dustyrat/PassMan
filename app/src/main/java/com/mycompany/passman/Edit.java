@@ -2,6 +2,7 @@ package com.mycompany.passman;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,31 +13,36 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Date;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-
-
+//TODO edit notification/extend
 public class Edit extends Activity implements View.OnClickListener {
     private Account data;
     private int pos;
     private EditText address, user, pass;
     private Button gen;
     private Intent intent;
+    private Switch enableNotifications;
+    private Boolean notificationChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
+        if (EnDecrypt.password == null){
+            startActivityForResult(new Intent("com.mycompany.passman.EnterPass"), 4);
+        }
+        else {
+            runActivity();
+        }
+    }
+
+    private void runActivity() {
+        SharedPreferences notifications = getApplicationContext().getSharedPreferences("notifications", Context.MODE_PRIVATE),
+                settings = getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
 
         intent = getIntent();
         data = new Account(intent.getStringExtra("data"));
@@ -52,6 +58,7 @@ public class Edit extends Activity implements View.OnClickListener {
                 submit = (ImageButton) findViewById(R.id.submit),
                 cancel = (ImageButton) findViewById(R.id.cancel),
                 delete = (ImageButton) findViewById(R.id.delete);
+        enableNotifications = (Switch)findViewById(R.id.enableNotifications);
 
         gen = (Button)findViewById(R.id.generate);
 
@@ -69,6 +76,10 @@ public class Edit extends Activity implements View.OnClickListener {
         cancel.setOnClickListener(this);
         delete.setOnClickListener(this);
         gen.setOnClickListener(this);
+
+        enableNotifications.setEnabled(settings.getBoolean("notifications", false));
+        enableNotifications.setChecked(notifications.getBoolean(data.getAddress() + " " + data.getUser_name(), false));
+        notificationChanged = notifications.getBoolean(data.getAddress() + " " + data.getUser_name(), false);
     }
 
 
@@ -190,15 +201,17 @@ public class Edit extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
-        if(newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString())){
+
+        if((newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString()))){
             data.add_pwd(pass.getText().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
             save(newkey, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
         }
-        else if(newkey.equals(oldkey) && (data.getCurPwd().equals(pass.getText().toString()) || data.getPwdsString().equals(pass.getText().toString()))){
+        else if((newkey.equals(oldkey) && (data.getCurPwd().equals(pass.getText().toString()) || data.getPwdsString().equals(pass.getText().toString())))
+                && notificationChanged == enableNotifications.isChecked()){
             new AlertDialog.Builder(this)
                     .setTitle("Error")
-                    .setMessage("Old password matches new pasword")
+                    .setMessage("Old password matches new password")
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -223,17 +236,20 @@ public class Edit extends Activity implements View.OnClickListener {
     }
 
     private void save(String key, String value) {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString(key, value);
-        editor.apply();
+        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
+        accounts.edit().putString(key, value).apply();
+        if (enableNotifications.isChecked()){
+            Notifications.setAlarm(getApplicationContext(), key);
+        }
+        else {
+            Notifications.cancelAlarm(getApplicationContext(), key);
+        }
     }
 
     private void delete(String key){
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.remove(key);
-        editor.apply();
+        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
+        accounts.edit().remove(key).apply();
+        Notifications.cancelAlarm(getApplicationContext(), key);
     }
 
     private void DeleteClick() {

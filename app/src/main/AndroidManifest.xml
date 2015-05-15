@@ -4,8 +4,18 @@
 
     <uses-sdk
         android:maxSdkVersion="22"
-        android:minSdkVersion="14"
+        android:minSdkVersion="16"
         android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +28,6 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,54 +36,70 @@
             android:label="@string/title_activity_generate" >
             <intent-filter>
                 <action android:name="com.mycompany.passman.Generate" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Accounts"
             android:exported="false"
-            android:label="@string/title_activity_accounts" >
+            android:label="@string/title_activity_accounts"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
             <intent-filter>
                 <action android:name="com.mycompany.passman.Accounts" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".AddAccount"
             android:exported="false"
-            android:label="@string/title_activity_add_account" >
+            android:label="@string/title_activity_add_account"
+            android:parentActivityName=".Accounts">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Accounts" />
             <intent-filter>
                 <action android:name="com.mycompany.passman.AddAccount" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Edit"
-            android:label="@string/title_activity_edit" >
+            android:exported="false"
+            android:label="@string/title_activity_edit"
+            android:parentActivityName=".Accounts">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Accounts" />
             <intent-filter>
                 <action android:name="com.mycompany.passman.Edit" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Details"
-            android:label="@string/title_activity_details" >
+            android:exported="false"
+            android:label="@string/title_activity_details"
+            android:parentActivityName=".Accounts">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Accounts" />
             <intent-filter>
                 <action android:name="com.mycompany.passman.Details" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Settings"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
             <intent-filter>
                 <action android:name="com.mycompany.passman.Settings" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -83,7 +108,6 @@
             android:label="@string/title_activity_set_pass" >
             <intent-filter>
                 <action android:name="com.mycompany.passman.SetPass" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -92,10 +116,9 @@
             android:label="@string/title_activity_enter_pass" >
             <intent-filter>
                 <action android:name="com.mycompany.passman.EnterPass" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <receiver android:name=".Notifications" android:enabled="true" />
     </application>
-
 </manifest>

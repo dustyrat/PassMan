@@ -120,9 +120,9 @@ public class SetPass extends Activity implements View.OnClickListener {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         Editor editor;
         if(passSet) {
-            SharedPreferences data = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
-            editor = data.edit();
-            Map<String, ?> keys = data.getAll();
+            SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
+            editor = accounts.edit();
+            Map<String, ?> keys = accounts.getAll();
             for (Map.Entry<String, ?> entry : keys.entrySet()) {
                 editor.putString(entry.getKey(), EnDecrypt.encrypt(newPwd.getText().toString().getBytes(), EnDecrypt.decrypt(curPwd.getText().toString().getBytes(), entry.getValue().toString())));
             }

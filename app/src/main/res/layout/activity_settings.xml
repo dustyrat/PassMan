@@ -11,17 +11,17 @@
         android:layout_height="wrap_content"
         android:text="Clear User Data"
         android:id="@+id/clear"
-        android:layout_below="@+id/changePwd"
+        android:layout_above="@+id/changePwd"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/changePwd"
+        android:layout_alignEnd="@+id/changePwd" />
 
     <Switch
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Notifications"
-        android:id="@+id/enableNot"
+        android:id="@+id/enableNotifications"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -34,16 +34,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Days"
         android:id="@+id/textView14"
-        android:layout_alignBottom="@+id/days"
-        android:layout_toLeftOf="@+id/days"
-        android:layout_toStartOf="@+id/days"
-        android:layout_marginBottom="50dp" />
-
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/days"
-        android:layout_below="@+id/enableNot"
+        android:layout_below="@+id/days"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -51,11 +42,11 @@
         android:layout_height="wrap_content"
         android:text="Change Password"
         android:id="@+id/changePwd"
-        android:layout_below="@+id/days"
+        android:layout_above="@+id/cancel"
+        android:layout_alignRight="@+id/cancel"
+        android:layout_alignEnd="@+id/cancel"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentStart="true" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -68,4 +59,20 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remind every"
+        android:id="@+id/textView15"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_below="@+id/enableNotifications"
+        android:layout_centerHorizontal="true" />
+
+    <NumberPicker
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/days"
+        android:layout_below="@+id/textView15"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -22,6 +22,15 @@ public class Details extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        if (EnDecrypt.password == null){
+            startActivityForResult(new Intent("com.mycompany.passman.EnterPass"), 4);
+        }
+        else {
+            runActivity();
+        }
+    }
+
+    private void runActivity() {
         Intent intent = getIntent();
         Account data = new Account(intent.getStringExtra("data"));
 
@@ -62,11 +71,8 @@ public class Details extends Activity implements View.OnClickListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.mycompany.passman;
-
+/*
+A class to hold account information
+ */
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,14 +84,12 @@ public class Account {
 
     public String get_date(){
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
-        String date = format.format(this.last_update);
-        return date;
+        return format.format(this.last_update);
     }
 
     public String get_Date(){
         SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-        String date = format.format(this.last_update);
-        return date;
+        return format.format(this.last_update);
     }
 
     public String getAddress(){

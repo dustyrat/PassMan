@@ -70,15 +70,19 @@ public class Generate extends Activity implements View.OnClickListener,
 
         upper.setMaxValue(5);
         upper.setMinValue(0);
+        upper.setWrapSelectorWheel(false);
         upper.setEnabled(false);
         lower.setMaxValue(5);
         lower.setMinValue(0);
+        lower.setWrapSelectorWheel(false);
         lower.setEnabled(false);
         num.setMaxValue(5);
         num.setMinValue(0);
+        num.setWrapSelectorWheel(false);
         num.setEnabled(false);
         spec.setMaxValue(5);
         spec.setMinValue(0);
+        spec.setWrapSelectorWheel(false);
         spec.setEnabled(false);
 
         RangeSeekBar<Integer> seekBar = new RangeSeekBar<>(1, 32, this);

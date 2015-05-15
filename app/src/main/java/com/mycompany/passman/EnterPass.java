@@ -14,7 +14,6 @@ import android.widget.ImageButton;
 
 
 public class EnterPass extends Activity implements View.OnClickListener {
-    private ImageButton submit, cancel;
     private EditText password;
 
     @Override
@@ -22,8 +21,7 @@ public class EnterPass extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_pass);
 
-        submit = (ImageButton)findViewById(R.id.submit);
-        cancel = (ImageButton)findViewById(R.id.cancel);
+        ImageButton submit = (ImageButton) findViewById(R.id.submit), cancel = (ImageButton) findViewById(R.id.cancel);
         submit.setOnClickListener(this);
         cancel.setOnClickListener(this);
 

@@ -10,38 +10,56 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Map;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 
 public class AddAccount extends Activity implements View.OnClickListener {
     private String password;
+    private Switch enableNotifications;
+    private EditText address, user_name, pwd;
 
-    //TODO set notifications
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        password = this.getIntent().getStringExtra("password");
         setContentView(R.layout.activity_add_account);
-        ImageButton submit = (ImageButton) findViewById(R.id.submit);
-        ImageButton cancel = (ImageButton) findViewById(R.id.cancel);
+
+        if (EnDecrypt.password == null){
+            startActivityForResult(new Intent("com.mycompany.passman.EnterPass"), 4);
+        }
+        else {
+            runActivity();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case 4: runActivity();
+                break;
+            case 5: finish();
+                break;
+        }
+    }
+
+    private void runActivity() {
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
+        password = EnDecrypt.password;
+
+        ImageButton submit = (ImageButton) findViewById(R.id.submit),
+                cancel = (ImageButton) findViewById(R.id.cancel);
+        enableNotifications = (Switch)findViewById(R.id.enableNotifications);
+        address = (EditText) findViewById(R.id.address);
+        user_name = (EditText) findViewById(R.id.username);
+        pwd = (EditText) findViewById(R.id.pwd);
+
+        enableNotifications.setEnabled(settings.getBoolean("notifications", false));
         submit.setOnClickListener(this);
         cancel.setOnClickListener(this);
     }
 
     private void submitClick() {
-        EditText address = (EditText) findViewById(R.id.address);
-        EditText user_name = (EditText) findViewById(R.id.username);
-        EditText pwd = (EditText) findViewById(R.id.pwd);
         if (user_name.getText().toString().equals("")
                 || address.getText().toString().equals("")
                 || pwd.getText().toString().equals("")){
@@ -74,8 +92,8 @@ public class AddAccount extends Activity implements View.OnClickListener {
         Account newAccount = new Account(address.getText().toString(), user_name.getText().toString(), pwd.getText().toString());
         key = newAccount.getAddress() + " " + newAccount.getUser_name();
 
-        SharedPreferences data = getApplicationContext().getSharedPreferences("Accounts", MODE_PRIVATE);
-        Map<String, ?> keys = data.getAll();
+        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
+        Map<String, ?> keys = accounts.getAll();
         for(Map.Entry<String,?> entry : keys.entrySet()) {
             if (key.equals(entry.getKey())){
                 new AlertDialog.Builder(this)
@@ -90,11 +108,16 @@ public class AddAccount extends Activity implements View.OnClickListener {
                 return;
             }
         }
+
         if (!newAccount.getPwds().isEmpty()) {
             value = newAccount.get_date() + " " + newAccount.getCurPwd() + " " + newAccount.getPwdsString();
         }
         else {
             value = newAccount.get_date() + " " + newAccount.getCurPwd();
+        }
+
+        if (enableNotifications.isChecked()){
+            Notifications.setAlarm(getApplicationContext(), key);
         }
 
         save(key, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
@@ -103,9 +126,10 @@ public class AddAccount extends Activity implements View.OnClickListener {
     }
 
     private void save(String key, String value) {
-        SharedPreferences data = getApplicationContext().getSharedPreferences("data", MODE_PRIVATE);
-        Editor editor = data.edit();
-        editor.putString(key, value).apply();
+        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE),
+                notifications = getApplicationContext().getSharedPreferences("notifications", MODE_PRIVATE);
+        accounts.edit().putString(key, value).apply();
+        notifications.edit().putBoolean(key, enableNotifications.isChecked()).apply();
     }
 
     @Override

@@ -15,9 +15,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button gen_page = (Button) findViewById(R.id.gen_page);
-        Button log_page = (Button) findViewById(R.id.log_page);
-        Button settings = (Button)findViewById(R.id.settings);
+        Button gen_page = (Button) findViewById(R.id.gen_page),
+                log_page = (Button) findViewById(R.id.log_page),
+                settings = (Button)findViewById(R.id.settings);
         gen_page.setOnClickListener(this);
         log_page.setOnClickListener(this);
         settings.setOnClickListener(this);

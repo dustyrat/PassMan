@@ -16,25 +16,39 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 
 
-public class Settings extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-    private Switch notificationSet;
+public class Settings extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, NumberPicker.OnValueChangeListener {
+    private Switch enableNotifications;
     private NumberPicker days;
-    private Button changePwd, clear;
-    private ImageButton back;
-    private Boolean passSet;
+    private boolean notificationsChange;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
 
-        notificationSet = (Switch)findViewById(R.id.enableNot);
+        enableNotifications = (Switch)findViewById(R.id.enableNotifications);
         days = (NumberPicker)findViewById(R.id.days);
-        changePwd = (Button)findViewById(R.id.changePwd);
-        clear = (Button)findViewById(R.id.clear);
-        back = (ImageButton)findViewById(R.id.cancel);
+        Button changePwd = (Button) findViewById(R.id.changePwd),
+                clear = (Button) findViewById(R.id.clear);
+        ImageButton back = (ImageButton) findViewById(R.id.cancel);
 
-        notificationSet.setOnCheckedChangeListener(this);
+        enableNotifications.setOnCheckedChangeListener(this);
+        enableNotifications.setChecked(settings.getBoolean("notifications", false));
+        days.setEnabled(enableNotifications.isChecked());
+        days.setWrapSelectorWheel(false);
+
+        days.setMinValue(1);
+        days.setMaxValue(4);
+        String[] dayValues = new String[4];
+        for (int i = 0; i < dayValues.length; i++) {
+            String number = Integer.toString((i + 1)*30);
+            dayValues[i] = number;
+        }
+
+        days.setDisplayedValues(dayValues);
+        days.setOnValueChangedListener(this);
+
         changePwd.setOnClickListener(this);
         clear.setOnClickListener(this);
         back.setOnClickListener(this);
@@ -65,8 +79,9 @@ public class Settings extends Activity implements View.OnClickListener, Compound
 
     private void loadSavedPreferences() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        notificationSet.setChecked(settings.getBoolean("notifications", false));
-        passSet = settings.getBoolean("passSet", false);
+        enableNotifications.setChecked(settings.getBoolean("notifications", false));
+        days.setValue(settings.getInt("days", 30) / 30);
+        notificationsChange = settings.getBoolean("notifications", false);
     }
 
     @Override
@@ -76,7 +91,27 @@ public class Settings extends Activity implements View.OnClickListener, Compound
                 break;
             case R.id.changePwd: changePwdClick();
                 break;
-            case R.id.cancel: finish();
+            case R.id.cancel: SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
+                if (notificationsChange != enableNotifications.isChecked() && !settings.getBoolean("notifications", false)){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Attention")
+                            .setMessage("Turning notifications off will delete all notifications on exit")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Notifications.cancelAll(getApplicationContext());
+                                    finish();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+                else{
+                    finish();
+                }
                 break;
         }
 
@@ -92,14 +127,18 @@ public class Settings extends Activity implements View.OnClickListener, Compound
                 .setMessage("This will delete all saved data including resetting the password.\nAre you sure you want to delete?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE).edit().clear().commit();
-                        getApplicationContext().getSharedPreferences("data", MODE_PRIVATE).edit().clear().commit();
+                        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE),
+                                settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE),
+                                notifications = getApplicationContext().getSharedPreferences("notifications", MODE_PRIVATE);
+                        settings.edit().clear().apply();
+                        accounts.edit().clear().apply();
+                        Notifications.cancelAll(getApplicationContext());
+                        notifications.edit().clear().apply();
                         loadSavedPreferences();
                     }
                 })
                 .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        return;
                     }
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -108,6 +147,14 @@ public class Settings extends Activity implements View.OnClickListener, Compound
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE).edit().putBoolean("notifications", isChecked).commit();
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
+        settings.edit().putBoolean("notifications", isChecked).apply();
+        days.setEnabled(isChecked);
+    }
+
+    @Override
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
+        settings.edit().putInt("days", newVal*30).apply();
     }
 }
