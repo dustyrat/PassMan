@@ -205,7 +205,7 @@ public class Edit extends Activity implements View.OnClickListener {
         if((newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString()))){
             data.add_pwd(pass.getText().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
-            save(newkey, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
+            save(newkey, EnDecrypt.encrypt(EnDecrypt.password, value));
         }
         else if((newkey.equals(oldkey) && (data.getCurPwd().equals(pass.getText().toString()) || data.getPwdsString().equals(pass.getText().toString())))
                 && notificationChanged == enableNotifications.isChecked()){
@@ -228,7 +228,7 @@ public class Edit extends Activity implements View.OnClickListener {
             data.setDate(new Date().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
 
-            save(newkey, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
+            save(newkey, EnDecrypt.encrypt(EnDecrypt.password, value));
         }
 
         setResult(2, new Intent().putExtra("data", data.toString()).putExtra("pos", pos));

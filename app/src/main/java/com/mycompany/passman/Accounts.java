@@ -49,7 +49,7 @@ public class Accounts extends Activity implements View.OnClickListener {
             temp = entry.getKey().split("\\s+");
             addressString = temp[0];
             usernameString = temp[1];
-            temp = EnDecrypt.decrypt(EnDecrypt.password.getBytes(), entry.getValue().toString()).split("\\s+");
+            temp = EnDecrypt.decrypt(EnDecrypt.password, entry.getValue().toString()).split("\\s+");
 
             dateString = temp[0];
             curPwd = temp[1];

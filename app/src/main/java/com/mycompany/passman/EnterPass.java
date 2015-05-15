@@ -63,7 +63,7 @@ public class EnterPass extends Activity implements View.OnClickListener {
 
     private void submitClick() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        if (password.getText().hashCode() == settings.getInt("password", 0)){ //TODO hashing
+        if (!EnDecrypt.generateSHA1(password.getText().toString()).equals(settings.getString("password", ""))){ //TODO hash
             new AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("You have entered the wrong password")

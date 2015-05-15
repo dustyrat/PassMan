@@ -19,7 +19,7 @@ import java.util.Map;
 public class SetPass extends Activity implements View.OnClickListener {
     private EditText curPwd, newPwd, conPwd;
     private Boolean passSet;
-    private int password;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class SetPass extends Activity implements View.OnClickListener {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         passSet = settings.getBoolean("passSet", false);
         if (passSet) {
-            password = settings.getInt("password", 0);
+            password = settings.getString("password", "");
         }
     }
 
@@ -81,7 +81,7 @@ public class SetPass extends Activity implements View.OnClickListener {
     }
 
     private void submitClick() {
-            if (passSet && curPwd.getText().toString().hashCode() != password){ //TODO hashing
+            if (passSet && !EnDecrypt.generateSHA1(curPwd.getText().toString()).equals(password)){ //TODO hash
                 new AlertDialog.Builder(this)
                         .setTitle("Error")
                         .setMessage("You have entered the wrong current password")
@@ -117,6 +117,7 @@ public class SetPass extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
+
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         Editor editor;
         if(passSet) {
@@ -124,13 +125,13 @@ public class SetPass extends Activity implements View.OnClickListener {
             editor = accounts.edit();
             Map<String, ?> keys = accounts.getAll();
             for (Map.Entry<String, ?> entry : keys.entrySet()) {
-                editor.putString(entry.getKey(), EnDecrypt.encrypt(newPwd.getText().toString().getBytes(), EnDecrypt.decrypt(curPwd.getText().toString().getBytes(), entry.getValue().toString())));
+                editor.putString(entry.getKey(), EnDecrypt.encrypt(newPwd.getText().toString(), EnDecrypt.decrypt(curPwd.getText().toString(), entry.getValue().toString())));
             }
             editor.apply();
         }
         editor = settings.edit();
         EnDecrypt.password = newPwd.getText().toString();
-        editor.putInt("password", newPwd.getText().toString().hashCode()); //TODO hashing
+        editor.putString("password", EnDecrypt.generateSHA1(newPwd.getText().toString())); //TODO hash
         editor.putBoolean("passSet", true).apply();
         setResult(4, new Intent());
         finish();

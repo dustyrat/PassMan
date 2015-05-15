@@ -120,7 +120,7 @@ public class AddAccount extends Activity implements View.OnClickListener {
             Notifications.setAlarm(getApplicationContext(), key);
         }
 
-        save(key, EnDecrypt.encrypt(EnDecrypt.password.getBytes(), value));
+        save(key, EnDecrypt.encrypt(EnDecrypt.password, value));
         setResult(1, new Intent().putExtra("password", password));
         finish();
     }
