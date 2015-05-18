@@ -15,7 +15,13 @@ import android.widget.ImageButton;
 import android.widget.NumberPicker;
 import android.widget.Switch;
 
-
+/* Class: Settings
+ * Purpose: Edit settings, clear user data and change password
+ * Extends: Activity
+ * Implements: OnClickListener
+ *             OnCheckedChangeListener
+ *             OnValueChangeListener
+*/
 public class Settings extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener, NumberPicker.OnValueChangeListener {
     private Switch enableNotifications;
     private NumberPicker days;
@@ -77,6 +83,7 @@ public class Settings extends Activity implements View.OnClickListener, Compound
         return super.onOptionsItemSelected(item);
     }
 
+    // Load settings
     private void loadSavedPreferences() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         enableNotifications.setChecked(settings.getBoolean("notifications", false));
@@ -84,6 +91,7 @@ public class Settings extends Activity implements View.OnClickListener, Compound
         notificationsChange = settings.getBoolean("notifications", false);
     }
 
+    // Handles button clicks
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -91,7 +99,8 @@ public class Settings extends Activity implements View.OnClickListener, Compound
                 break;
             case R.id.changePwd: changePwdClick();
                 break;
-            case R.id.cancel: SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
+            case R.id.cancel: // Check if notification settings were changed and prompt user to confirm
+                SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
                 if (notificationsChange != enableNotifications.isChecked() && !settings.getBoolean("notifications", false)){
                     new AlertDialog.Builder(this)
                             .setTitle("Attention")
@@ -117,10 +126,12 @@ public class Settings extends Activity implements View.OnClickListener, Compound
 
     }
 
+    // Call SetPass page
     private void changePwdClick() {
         startActivity(new Intent("com.mycompany.passman.SetPass"));
     }
 
+    // Clears all user data
     private void clearClick() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirmation")

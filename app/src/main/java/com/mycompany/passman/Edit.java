@@ -17,21 +17,31 @@ import android.widget.Switch;
 
 import java.util.Date;
 
-//TODO edit notification/extend
+/* Class: Edit
+ * Purpose: To edit or delete and account
+ * Extends: Activity
+ * Implements OnCLickListener
+ * Private Variables: data - Account to be edited
+ *                    pos - int holds position in ListView
+ *                    intent - Intent holds parent intent
+ *                    notificationsChanged - Boolean holds original notification setting
+*/
 public class Edit extends Activity implements View.OnClickListener {
     private Account data;
     private int pos;
+    private Intent intent;
+    private Boolean notificationChanged;
+
     private EditText address, user, pass;
     private Button gen;
-    private Intent intent;
     private Switch enableNotifications;
-    private Boolean notificationChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        // Check for password
         if (EnDecrypt.password == null){
             startActivityForResult(new Intent("com.mycompany.passman.EnterPass"), 4);
         }
@@ -40,6 +50,9 @@ public class Edit extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: runActivity
+     * Purpose: Initializes UI
+     */
     private void runActivity() {
         SharedPreferences notifications = getApplicationContext().getSharedPreferences("notifications", Context.MODE_PRIVATE),
                 settings = getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -105,6 +118,7 @@ public class Edit extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    // Handle button clicks
     @Override
     public void onClick(View v) {
         switch (v.getId()){
@@ -126,6 +140,10 @@ public class Edit extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: AddressClick, UserClick, PassClick
+     * Purpose: Toggles EditText fields and text
+     * Returns: void
+     */
     private void AddressClick() {
         address.setEnabled(!address.isEnabled());
         if (address.isEnabled()){
@@ -157,10 +175,16 @@ public class Edit extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: SubmitClick
+     * Purpose: Checks input
+     * Returns: void
+     */
     private void SubmitClick() {
         String newkey, oldkey, value;
         newkey = address.getText().toString() + " " + user.getText().toString();
         oldkey = data.getAddress() + " " + data.getUser_name();
+
+        // Check for empty fields
         if (user.getText().toString().equals("")
                 || address.getText().toString().equals("")
                 || pass.getText().toString().equals("")){
@@ -175,6 +199,7 @@ public class Edit extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
+        // Check for whitespace
         else if (user.getText().toString().contains(" ")
                 || address.getText().toString().contains(" ")
                 || pass.getText().toString().contains(" ")){
@@ -189,6 +214,7 @@ public class Edit extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
+        // Check password history for duplicates
         else if(data.getPwdsString().contains(pass.getText().toString())){
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -201,12 +227,7 @@ public class Edit extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
-
-        if((newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString()))){
-            data.add_pwd(pass.getText().toString());
-            value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
-            save(newkey, EnDecrypt.encrypt(EnDecrypt.password, value));
-        }
+        // Check if password matches last password
         else if((newkey.equals(oldkey) && (data.getCurPwd().equals(pass.getText().toString()) || data.getPwdsString().equals(pass.getText().toString())))
                 && notificationChanged == enableNotifications.isChecked()){
             new AlertDialog.Builder(this)
@@ -220,6 +241,12 @@ public class Edit extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
+        // Check for password change
+        else if((newkey.equals(oldkey) && !data.getCurPwd().equals(pass.getText().toString()))){
+            data.add_pwd(pass.getText().toString());
+            value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
+        }
+        // else delete old and update address and user name
         else{
             delete(oldkey);
             data.setAddress(address.getText().toString());
@@ -227,17 +254,19 @@ public class Edit extends Activity implements View.OnClickListener {
             data.setCurPwd(pass.getText().toString());
             data.setDate(new Date().toString());
             value = data.get_date() + " " + data.getCurPwd() + " " + data.getPwdsString();
-
-            save(newkey, EnDecrypt.encrypt(EnDecrypt.password, value));
         }
 
+        // Encrypt and save
+        save(newkey, EnDecrypt.encrypt(EnDecrypt.password, value));
         setResult(2, new Intent().putExtra("data", data.toString()).putExtra("pos", pos));
         finish();
     }
 
+    // Save key value into SharedPreferences
     private void save(String key, String value) {
         SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
         accounts.edit().putString(key, value).apply();
+        // set notifications
         if (enableNotifications.isChecked()){
             Notifications.setAlarm(getApplicationContext(), key);
         }
@@ -246,12 +275,7 @@ public class Edit extends Activity implements View.OnClickListener {
         }
     }
 
-    private void delete(String key){
-        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
-        accounts.edit().remove(key).apply();
-        Notifications.cancelAlarm(getApplicationContext(), key);
-    }
-
+    // Delete confirmation
     private void DeleteClick() {
         new AlertDialog.Builder(this)
                 .setTitle("Confirmation")
@@ -272,6 +296,14 @@ public class Edit extends Activity implements View.OnClickListener {
                 .show();
     }
 
+    // Delete key from SharedPreferences
+    private void delete(String key){
+        SharedPreferences accounts = getApplicationContext().getSharedPreferences("accounts", MODE_PRIVATE);
+        accounts.edit().remove(key).apply();
+        Notifications.cancelAlarm(getApplicationContext(), key);
+    }
+
+    // Generate new password call generate page
     private void GenerateClick() {
         startActivityForResult(new Intent("com.mycompany.passman.Generate").putExtra("data", data.getCurPwd() + " " + data.getPwdsString()), 2);
     }

@@ -12,7 +12,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-
+/* Class: EnterPass
+ * Purpose: Prompt for user to enter app password
+ * Extends: Activity
+ * Implements: OnClickListener
+*/
 public class EnterPass extends Activity implements View.OnClickListener {
     private EditText password;
 
@@ -61,9 +65,13 @@ public class EnterPass extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: submitClick
+     * Purpose: Verify password
+     * Returns: void
+    */
     private void submitClick() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        if (!EnDecrypt.generateSHA1(password.getText().toString()).equals(settings.getString("password", ""))){ //TODO hash
+        if (!EnDecrypt.generateSHA1(password.getText().toString()).equals(settings.getString("password", ""))){
             new AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("You have entered the wrong password")

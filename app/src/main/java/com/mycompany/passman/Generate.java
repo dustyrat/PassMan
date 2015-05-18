@@ -21,6 +21,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/* Class: Generate
+ * Purpose: Generates a random String with given parameters
+ * Extends: Activity
+ * Implements: OnClickListener
+ *             OnCheckedChangeListener
+*/
 public class Generate extends Activity implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
 
@@ -34,6 +40,7 @@ public class Generate extends Activity implements View.OnClickListener,
     private int Max = 32, Min = 1;
     private String data;
 
+    // Initializes UI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,29 +107,22 @@ public class Generate extends Activity implements View.OnClickListener,
             }
         });
 
-// add RangeSeekBar to pre-defined layout
+        // add RangeSeekBar to pre-defined layout
         ViewGroup layout = (ViewGroup) findViewById(R.id.range);
         layout.addView(seekBar);
     }
 
+    /* Method: gen_pwdClick
+     * Purpose: Generates random String
+     * Returns: void
+    */
     private void gen_pwdClick(){
-        if ((lower.getValue() + upper.getValue() + num.getValue() + spec.getValue()) > Max){
-            new AlertDialog.Builder(this)
-                    .setTitle("Error")
-                    .setMessage("Minimums can not exceed max length")
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-            return;
-        }
-
         StringBuilder buffer = new StringBuilder(), temp = new StringBuilder();
-        String characters = "", low = "", up = "", number = "", other = "";
+        String characters = "", low, up, number, other = "";
         int length, a = lower.getValue(), A = upper.getValue() , n = num.getValue(), s = spec.getValue();
 
+        // Check for settings
+        // generate random lowercase and uppercase Strings
         if (alpha.isChecked()){
             low = "abcdefghijklmnopqrstuvwxyz";
             up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -136,6 +136,7 @@ public class Generate extends Activity implements View.OnClickListener,
             }
             characters += low + up;
         }
+        // generate random numeric String
         if (numeric.isChecked()){
             number = "1234567890";
             for (int i = 0; i < n; i++) {
@@ -144,6 +145,7 @@ public class Generate extends Activity implements View.OnClickListener,
             }
             characters += number;
         }
+        // generate random special character String
         if (special.isChecked()){
             if (spec_all.isChecked()){
                 other = "~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?";
@@ -158,6 +160,7 @@ public class Generate extends Activity implements View.OnClickListener,
             characters += other;
         }
 
+        // Check for no options selected or empty/whitespace in custom special characters
         if (characters.equals("") || characters.contains(" ")){
             new AlertDialog.Builder(this)
                     .setTitle("Error")
@@ -171,12 +174,14 @@ public class Generate extends Activity implements View.OnClickListener,
             return;
         }
 
+        // Generate random String
         length = Min + (int)(Math.random() * ((Max - Min) + 1));
         for (int i = 0; i < length; i++) {
             int index = (int)(Math.random() * characters.length());
             buffer.append(characters.charAt(index));
         }
 
+        // Takes random character sets and overwrites random index
         if (temp.length() > 0) {
             int index;
             ArrayList<Integer> indexs = new ArrayList<>();
@@ -188,7 +193,8 @@ public class Generate extends Activity implements View.OnClickListener,
                 buffer.setCharAt(index, temp.charAt(i));
             }
         }
-        
+
+        // Check for duplicates in password history
         if (!(data == null)){
             while(data.contains(buffer.toString())) {
                 gen_pwdClick();
@@ -200,6 +206,7 @@ public class Generate extends Activity implements View.OnClickListener,
         pwd.setText(buffer.toString());
     }
 
+    // Handles button clicks
     @Override
     public void onClick(View v){
         switch(v.getId()){
@@ -236,6 +243,7 @@ public class Generate extends Activity implements View.OnClickListener,
         }
     }
 
+    // Toggles special characters options
     public void onCheckedChanged(RadioGroup group, int checkedId){
         switch (checkedId){
             case R.id.spec_all:

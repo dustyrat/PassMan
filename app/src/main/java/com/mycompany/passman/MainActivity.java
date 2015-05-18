@@ -8,7 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-
+/* Class: MainActivity
+ * Purpose: Main page
+ * Extends: Activity
+ * Implements: OnClickListener
+*/
 public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
@@ -23,6 +27,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         settings.setOnClickListener(this);
     }
 
+    // Starts Generate, Accounts, Settings pages
     private void gen_pageClick(){
         startActivity(new Intent("com.mycompany.passman.Generate"));
     }
@@ -35,6 +40,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         startActivity(new Intent("com.mycompany.passman.Settings"));
     }
 
+    // Handles button clicks
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.gen_page: gen_pageClick();

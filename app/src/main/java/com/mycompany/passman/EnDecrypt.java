@@ -14,14 +14,27 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-
+/* Class: EnDecrypt
+ * Purpose: Holds session password, Encrypt/Decrypt and hashing
+ */
 public class EnDecrypt {
     public static String password;
 
+    /* Method: generateSHA1
+     * Purpose: Sets hashing SHA-1 algorithm
+     * Parameters: message - String data to be hashed
+     * Returns: String
+    */
     public static String generateSHA1(String message) {
         return hashString(message, "SHA-1");
     }
 
+    /* Method: hashString
+     * Purpose: Hashes message with with given algorithm
+     * Parameters: message - String data to be hashed
+     *             algorithm - String hashing algorithm
+     * Returns: String
+    */
     private static String hashString(String message, String algorithm) {
         byte[] hashedBytes = new byte[0];
         try {
@@ -33,6 +46,11 @@ public class EnDecrypt {
         return convertByteArrayToHexString(hashedBytes);
     }
 
+    /* Method: hashString
+     * Purpose: Hashes message with with SHA-256 algorithm
+     * Parameters: message - String data to be hashed
+     * Returns: byte[]
+    */
     private static byte[] hashString(String message) {
         byte[] hashedBytes = new byte[0];
         try {
@@ -44,6 +62,11 @@ public class EnDecrypt {
         return hashedBytes;
     }
 
+    /* Method: convertByteArrayToHexString
+     * Purpose: converts hashed byte[] into hex String
+     * Parameters: arrayBytes - byte[] to be converted into hex String
+     * Returns: String
+    */
     private static String convertByteArrayToHexString(byte[] arrayBytes) {
         StringBuilder stringBuffer = new StringBuilder();
         for (byte arrayByte : arrayBytes) {
@@ -53,6 +76,12 @@ public class EnDecrypt {
         return stringBuffer.toString();
     }
 
+    /* Method: encrypt
+     * Purpose: Encrypts data with given key with AES algorithm
+     * Parameters: keyStr - String password
+     *             data - String account data
+     * Returns: String
+    */
     public static String encrypt(String keyStr, String data) {
         try {
             Key key = new SecretKeySpec(hashString(keyStr), "AES");
@@ -66,6 +95,12 @@ public class EnDecrypt {
         return data;
     }
 
+    /* Method: decrypt
+     * Purpose: Decrypts data with given key with AES algorithm
+     * Parameters: keyStr - String password
+     *             data - String account data
+     * Returns: String
+    */
     public static String decrypt(String keyStr, String data) {
         try {
             Key key = new SecretKeySpec(hashString(keyStr), "AES");

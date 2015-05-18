@@ -12,7 +12,9 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-
+/* Class: Accounts
+ * Purpose: Display all accounts
+*/
 public class Accounts extends Activity implements View.OnClickListener {
     private ArrayList<Account> listData;
     private AccountItemAdapter itemAdapter;
@@ -21,11 +23,9 @@ public class Accounts extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Check for password/reload
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
-        if (getIntent().getBooleanExtra("refresh", false)){
-            runActivity();
-        }
-        else if(EnDecrypt.password != null){
+        if(EnDecrypt.password != null || getIntent().getBooleanExtra("refresh", false)){
             runActivity();
         }
         else if (!settings.getBoolean("passSet", false)) {
@@ -36,6 +36,19 @@ public class Accounts extends Activity implements View.OnClickListener {
         }
     }
 
+    // Initialize UI
+    private void runActivity() {
+        setContentView(R.layout.activity_accounts);
+        ImageButton add_account = (ImageButton) findViewById(R.id.add), back = (ImageButton) findViewById(R.id.cancel);
+        add_account.setOnClickListener(this);
+        back.setOnClickListener(this);
+        loadSavedPreferences();
+        itemAdapter = new AccountItemAdapter(this, R.layout.account_list, listData);
+        ListView listView = (ListView) this.findViewById(R.id.accountList);
+        listView.setAdapter(itemAdapter);
+    }
+
+    // Load data from SharedPreferences into ArrayList<Account>
     private void loadSavedPreferences() {
         Account account;
         listData = new ArrayList<>();
@@ -60,7 +73,7 @@ public class Accounts extends Activity implements View.OnClickListener {
         }
     }
 
-
+    // Load add accounts page
     private void add_accountClick() {
         startActivityForResult(new Intent("com.mycompany.passman.AddAccount"), 1);
     }
@@ -72,6 +85,7 @@ public class Accounts extends Activity implements View.OnClickListener {
         return true;
     }
 
+    // Handle button clicks
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -86,30 +100,24 @@ public class Accounts extends Activity implements View.OnClickListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode){
-            case 1: startActivity(new Intent("com.mycompany.passman.Accounts").putExtra("refresh", true));
+            case 1: // Refresh page
+                startActivity(new Intent("com.mycompany.passman.Accounts").putExtra("refresh", true));
                 finish();
                 break;
-            case 2: listData.get(data.getIntExtra("pos", 0)).fromString(data.getStringExtra("data"));
+            case 2: // Update ListView after editing
+                listData.get(data.getIntExtra("pos", 0)).fromString(data.getStringExtra("data"));
                 itemAdapter.notifyDataSetChanged();
                 break;
-            case 3: listData.remove(data.getIntExtra("pos", 0));
+            case 3: // Remove view from ListView
+                listData.remove(data.getIntExtra("pos", 0));
                 itemAdapter.notifyDataSetChanged();
                 break;
-            case 4: runActivity();
+            case 4: // Run activity after login
+                runActivity();
                 break;
-            case 5: finish();
+            case 5: // Back out on cancel login
+                finish();
                 break;
         }
-    }
-
-    private void runActivity() {
-        setContentView(R.layout.activity_accounts);
-        ImageButton add_account = (ImageButton) findViewById(R.id.add), back = (ImageButton) findViewById(R.id.cancel);
-        add_account.setOnClickListener(this);
-        back.setOnClickListener(this);
-        loadSavedPreferences();
-        itemAdapter = new AccountItemAdapter(this, R.layout.account_list, listData);
-        ListView listView = (ListView) this.findViewById(R.id.accountList);
-        listView.setAdapter(itemAdapter);
     }
 }

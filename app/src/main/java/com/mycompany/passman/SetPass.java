@@ -15,7 +15,11 @@ import android.widget.ImageButton;
 
 import java.util.Map;
 
-
+/* Class: SetPass
+ * Purpose: Sets and changes app password
+ * Extends: Activity
+ * Implements OnClickListener
+*/
 public class SetPass extends Activity implements View.OnClickListener {
     private EditText curPwd, newPwd, conPwd;
     private Boolean passSet;
@@ -32,6 +36,7 @@ public class SetPass extends Activity implements View.OnClickListener {
         cancel.setOnClickListener(this);
 
         curPwd = (EditText)findViewById(R.id.curPwd);
+        // check if a password was set
         if (!passSet){
             curPwd.setVisibility(View.GONE);
         }
@@ -39,6 +44,7 @@ public class SetPass extends Activity implements View.OnClickListener {
         conPwd = (EditText)findViewById(R.id.confirmPwd);
     }
 
+    // loads settings
     private void loadSavedPreferences() {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         passSet = settings.getBoolean("passSet", false);
@@ -69,6 +75,7 @@ public class SetPass extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    // Handles button clicks
     @Override
     public void onClick(View v) {
         switch(v.getId()){
@@ -80,20 +87,26 @@ public class SetPass extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: submitClick
+     * Purpose: Checks user input
+     * Returns: void
+    */
     private void submitClick() {
-            if (passSet && !EnDecrypt.generateSHA1(curPwd.getText().toString()).equals(password)){ //TODO hash
-                new AlertDialog.Builder(this)
-                        .setTitle("Error")
-                        .setMessage("You have entered the wrong current password")
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-                return;
+        // Check if password was set and compares entered current password hash to saved hash
+        if (passSet && !EnDecrypt.generateSHA1(curPwd.getText().toString()).equals(password)){
+            new AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("You have entered the wrong current password")
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+            return;
             }
-        if (passSet && curPwd.getText().toString().equals(newPwd.getText().toString())) {
+        // Checks if password was set and checks current password to new password
+        else if (passSet && curPwd.getText().toString().equals(newPwd.getText().toString())) {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("New password can not match current password")
@@ -105,7 +118,8 @@ public class SetPass extends Activity implements View.OnClickListener {
                     .show();
             return;
         }
-        if (!newPwd.getText().toString().equals(conPwd.getText().toString())) {
+        // Checks if new password and confirm password match
+        else if (!newPwd.getText().toString().equals(conPwd.getText().toString())) {
             new AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("New password does not match")
@@ -118,6 +132,7 @@ public class SetPass extends Activity implements View.OnClickListener {
             return;
         }
 
+        // If password was set decrypt and re-encrypt data
         SharedPreferences settings = getApplicationContext().getSharedPreferences("settings", MODE_PRIVATE);
         Editor editor;
         if(passSet) {
@@ -129,9 +144,10 @@ public class SetPass extends Activity implements View.OnClickListener {
             }
             editor.apply();
         }
+
         editor = settings.edit();
         EnDecrypt.password = newPwd.getText().toString();
-        editor.putString("password", EnDecrypt.generateSHA1(newPwd.getText().toString())); //TODO hash
+        editor.putString("password", EnDecrypt.generateSHA1(newPwd.getText().toString()));
         editor.putBoolean("passSet", true).apply();
         setResult(4, new Intent());
         finish();

@@ -15,25 +15,45 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-
+/* Class: AccountItemAdapter
+ * Extends: ArrayList<Account>
+ * Purpose: Load contents of ListView
+ */
 public class AccountItemAdapter extends ArrayAdapter<Account> {
     private Activity myContext;
     private ArrayList<Account> data;
 
+    /* Class: ViewHolder
+     * Purpose: Holds TextViews, Buttons and CheckBock
+     */
     static class ViewHolder{
         TextView WebAddress, UserName, Password, LastDate;
         Button Edit, Details;
         CheckBox Show;
     }
 
+    /* Constructor: AccountItemAdapter
+     * Purpose: Initialize class
+     * Parameters: context - Context
+     *             textViewResourceId - int
+     *             objects - ArrayList<Account>
+     */
     public AccountItemAdapter(Context context, int textViewResourceId, ArrayList<Account> objects) {
         super(context, textViewResourceId, objects);
         myContext = (Activity) context;
         data = objects;
     }
-    
+
+    /* Method: getView
+     * Purpose: return modified view
+     * Parameters: position - int position in ArrayList
+     *             convertView - View to add to
+     *             parent - ViewGroup the parent of convertView
+     * Return value: View
+     */
     public View getView(int position, View convertView, ViewGroup parent){
         final ViewHolder viewHolder;
+        // if convertView is empty initialize UI elements
         if(convertView == null) {
             LayoutInflater inflater = myContext.getLayoutInflater();
             convertView = inflater.inflate(R.layout.account_list, null);
@@ -62,6 +82,7 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
         viewHolder.Password.setText(data.get(position).getCurPwd());
         viewHolder.LastDate.setText(data.get(position).get_Date());
 
+        // Load edit accounts activity
         viewHolder.Edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +91,7 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
             }
         });
 
+        // Load details activity
         viewHolder.Details.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,6 +100,7 @@ public class AccountItemAdapter extends ArrayAdapter<Account> {
             }
         });
 
+        // Show/Hide password
         viewHolder.Show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

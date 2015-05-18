@@ -13,7 +13,17 @@ import android.support.v4.app.NotificationCompat;
 import java.util.Calendar;
 import java.util.Map;
 
+/* Class: Notifications
+ * Purpose: Create and delete scheduled notifications
+ * Extends: BroadcastReceiver
+*/
 public class Notifications extends BroadcastReceiver {
+    /* Method: setAlarm
+     * Purpose: Schedules notification reminders
+     * Parameters: context - Context holds parent's context
+     *             ID - String holds unique identification for canceling
+     * Returns: void
+    */
     public static void setAlarm(Context context, String ID){
         SharedPreferences settings = context.getApplicationContext().getSharedPreferences("settings", Context.MODE_PRIVATE),
                 notifications = context.getApplicationContext().getSharedPreferences("notifications", Context.MODE_PRIVATE);
@@ -34,10 +44,16 @@ public class Notifications extends BroadcastReceiver {
                         PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
+    /* Method: remindAlarm
+     * Purpose: Schedules notification reminder after one day
+     * Parameters: context - Context holds parent's context
+     *             ID - String holds unique identification for canceling
+     * Returns: void
+    */
     public static void remindAlarm(Context context, String ID) {
         Calendar calendar = Calendar.getInstance();
         // for debug change DAY_OF_YEAR to SECONDS
-        calendar.add(Calendar.DAY_OF_YEAR, 10);
+        calendar.add(Calendar.DAY_OF_YEAR, 1);
         long alertTime = calendar.getTimeInMillis();
 
         Intent alertIntent = new Intent(context, Notifications.class).putExtra("ID", ID);
@@ -49,6 +65,12 @@ public class Notifications extends BroadcastReceiver {
                         PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
+    /* Method: cancelAlarm
+     * Purpose: Cancels scheduled notification reminder
+     * Parameters: context - Context holds parent's context
+     *             ID - String holds unique identification for canceling
+     * Returns: void
+    */
     public static void cancelAlarm(Context context, String ID) {
         SharedPreferences notifications = context.getApplicationContext().getSharedPreferences("notifications", Context.MODE_PRIVATE);
         notifications.edit().putBoolean(ID, false).apply();
@@ -59,6 +81,11 @@ public class Notifications extends BroadcastReceiver {
                 PendingIntent.FLAG_UPDATE_CURRENT));
     }
 
+    /* Method: cancelAll
+     * Purpose: Cancels all notification reminders
+     * Parameters: context - Context holds parent's context
+     * Returns: void
+    */
     public static void cancelAll(Context context){
         SharedPreferences notifications = context.getApplicationContext().getSharedPreferences("notifications", Context.MODE_PRIVATE);
         Map<String, ?> keys = notifications.getAll();
@@ -75,6 +102,14 @@ public class Notifications extends BroadcastReceiver {
         remindAlarm(context, intent.getStringExtra("ID"));
     }
 
+    /* Method: createNotification
+     * Purpose: Notifications and schedule one day reminder
+     * Parameters: context - Context holds parent's context
+     *             ID - int unique identification hashcode
+     *             msg - String title message for notification
+     *             msgText - String content message for notification
+     * Returns: void
+    */
     public void createNotification(Context context, int ID, String msg, String msgText) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.drawable.ic_action_edit)

@@ -13,15 +13,19 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-
+/* Class: Details
+ * Purpose: To view details of an account
+ * Extends: Activity
+ * Implements: OnClickListener
+ */
 public class Details extends Activity implements View.OnClickListener {
 
-    //TODO decrypt data
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
+        // Check for password
         if (EnDecrypt.password == null){
             startActivityForResult(new Intent("com.mycompany.passman.EnterPass"), 4);
         }
@@ -30,6 +34,9 @@ public class Details extends Activity implements View.OnClickListener {
         }
     }
 
+    /* Method: runActivity
+     * Purpose: Initializes UI
+     */
     private void runActivity() {
         Intent intent = getIntent();
         Account data = new Account(intent.getStringExtra("data"));
@@ -43,6 +50,7 @@ public class Details extends Activity implements View.OnClickListener {
         cur_pass = (TextView)findViewById(R.id.cur_pass);
         date = (TextView)findViewById(R.id.date);
 
+        // Check for password history
         if(data.getPwds().isEmpty()) {
             ArrayList<String> notFound = new ArrayList<>();
             notFound.add("No Entries Found");
